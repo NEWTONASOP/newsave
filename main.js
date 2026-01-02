@@ -461,12 +461,21 @@ async function downloadPlaylist(event, id, url, outputDir, format, quality, type
 
 // Get yt-dlp path
 function getYtDlpPath() {
-    // Check if bundled yt-dlp exists
-    const bundledPath = path.join(__dirname, 'yt-dlp.exe');
-    if (fs.existsSync(bundledPath)) {
-        return bundledPath;
+    // In development, the file is in the project root
+    let ytDlpPath = path.join(__dirname, 'yt-dlp.exe');
+
+    // In production, Electron-builder places unpacked files in app.asar.unpacked
+    if (app.isPackaged) {
+        ytDlpPath = path.join(process.resourcesPath, 'app.asar.unpacked', 'yt-dlp.exe');
     }
-    // Fallback to system yt-dlp
+
+    console.log('Using yt-dlp from:', ytDlpPath);
+
+    if (fs.existsSync(ytDlpPath)) {
+        return ytDlpPath;
+    }
+
+    // Final fallback to system path
     return 'yt-dlp';
 }
 
