@@ -872,9 +872,9 @@ function setupIPCListeners() {
         showUpdateReadyNotification(info);
     });
 
-    window.electron.onUpdateError((error) => {
-        console.error('Update error:', error);
-        showToast('Update Error', 'Failed to check for updates', 'error');
+    window.electron.onUpdateError((data) => {
+        console.error('Update error:', data);
+        showToast('Update Error', data.message || 'Failed to check for updates', 'error');
     });
 }
 

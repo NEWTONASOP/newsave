@@ -12,7 +12,7 @@
     "pack": "electron-builder --dir",
     "publish": "electron-builder --publish always",
     "push": "git add . && git commit -m \"Update\" && git push origin main",
-    "release": "node -e \"const v=require('./package.json').version; const c=`git add . && git commit -m \\\"Release v${v}\\\" && git push && git tag v${v} && git push origin v${v}`; require('child_process').execSync(c, {stdio:'inherit'})\""
+    "release": "node -e \"const v=require('./package.json').version; require('child_process').execSync(`git add . && git commit -m \\\"Release v${v}\\\" && git push && git tag v${v} && git push origin v${v}`, {stdio:'inherit'})\""
   },
   "build": {
     "appId": "com.newsave.downloader",
