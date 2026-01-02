@@ -1,6 +1,6 @@
 {
   "name": "newsave",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "main.js",
   "repository": {
     "type": "git",
@@ -11,8 +11,8 @@
     "build": "electron-builder",
     "pack": "electron-builder --dir",
     "publish": "electron-builder --publish always",
-    "git-push": "git add . && git commit -m \"Update\" && git push origin main",
-    "tag-release": "for /f \"tokens=2 delims=:,\" %a in ('findstr /i \"version\" package.json') do (set ver=%~a) & set ver=%ver: =% & set ver=%ver:\"=% & git add . & git commit -m \"Release v%ver%\" & git push & git tag v%ver% & git push origin v%ver%"
+    "push": "git add . && git commit -m \"Update\" && git push origin main",
+    "release": "node -e \"const v=require('./package.json').version; const c=`git add . && git commit -m \\\"Release v${v}\\\" && git push && git tag v${v} && git push origin v${v}`; require('child_process').execSync(c, {stdio:'inherit'})\""
   },
   "build": {
     "appId": "com.newsave.downloader",
