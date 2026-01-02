@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupKeyboardShortcuts();
         setupDragAndDrop();
         updateUI();
+        updateAppVersion();
 
         // Request notification permission
         requestNotificationPermission();
@@ -40,6 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Error', 'Failed to initialize app', 'error');
     }
 });
+
+async function updateAppVersion() {
+    try {
+        const version = await window.electron.getVersion();
+        if (elements.displayAppVersion) {
+            elements.displayAppVersion.textContent = `NewSave v${version}`;
+        }
+    } catch (err) {
+        console.error('Failed to get app version:', err);
+    }
+}
 
 function initializeElements() {
     elements = {
@@ -105,7 +117,12 @@ function initializeElements() {
         inputSection: document.getElementById('input-section'),
 
         // Toast
-        toastContainer: document.getElementById('toast-container')
+        toastContainer: document.getElementById('toast-container'),
+
+        // Updates
+        manualCheckUpdate: document.getElementById('manual-check-update'),
+        updateStatusText: document.getElementById('update-status-text'),
+        displayAppVersion: document.getElementById('display-app-version')
     };
 }
 
@@ -778,6 +795,20 @@ function setupEventListeners() {
         });
     }
 
+    // Manual update check
+    if (elements.manualCheckUpdate) {
+        elements.manualCheckUpdate.addEventListener('click', () => {
+            elements.manualCheckUpdate.disabled = true;
+            if (elements.updateStatusText) elements.updateStatusText.textContent = 'Checking for updates...';
+            window.electron.checkForUpdates();
+
+            // Re-enable after 10 seconds in case of no response
+            setTimeout(() => {
+                if (elements.manualCheckUpdate) elements.manualCheckUpdate.disabled = false;
+            }, 10000);
+        });
+    }
+
     // Window focus for auto-paste
     window.addEventListener('focus', handleWindowFocus);
 
@@ -851,29 +882,39 @@ function setupIPCListeners() {
     // Auto-updater listeners
     window.electron.onCheckingForUpdate(() => {
         console.log('Checking for updates...');
+        if (elements.updateStatusText) elements.updateStatusText.textContent = 'Checking for updates...';
     });
 
     window.electron.onUpdateAvailable((info) => {
         console.log('Update available:', info);
+        if (elements.updateStatusText) elements.updateStatusText.textContent = `Version ${info.version} available!`;
+        if (elements.manualCheckUpdate) elements.manualCheckUpdate.disabled = false;
         showUpdateNotification(info);
     });
 
     window.electron.onUpdateNotAvailable(() => {
         console.log('No updates available');
+        if (elements.updateStatusText) elements.updateStatusText.textContent = 'App is up to date';
+        if (elements.manualCheckUpdate) elements.manualCheckUpdate.disabled = false;
     });
 
     window.electron.onUpdateDownloadProgress((progress) => {
         console.log('Update download progress:', progress.percent);
+        if (elements.updateStatusText) elements.updateStatusText.textContent = `Downloading: ${Math.round(progress.percent)}%`;
         updateDownloadProgress(progress);
     });
 
     window.electron.onUpdateDownloaded((info) => {
         console.log('Update downloaded:', info);
+        if (elements.updateStatusText) elements.updateStatusText.textContent = 'Update ready to install';
+        if (elements.manualCheckUpdate) elements.manualCheckUpdate.disabled = false;
         showUpdateReadyNotification(info);
     });
 
     window.electron.onUpdateError((data) => {
         console.error('Update error:', data);
+        if (elements.updateStatusText) elements.updateStatusText.textContent = 'Update check failed';
+        if (elements.manualCheckUpdate) elements.manualCheckUpdate.disabled = false;
         showToast('Update Error', data.message || 'Failed to check for updates', 'error');
     });
 }

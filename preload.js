@@ -40,5 +40,8 @@ contextBridge.exposeInMainWorld("electron", {
     onUpdateError: (callback) => ipcRenderer.on("update-error", (event, error) => callback(error)),
 
     // Remove listeners
-    removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
+    removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
+
+    // App info
+    getVersion: () => ipcRenderer.invoke("get-version")
 });

@@ -202,7 +202,12 @@ function setupIPCHandlers() {
     });
 
     ipcMain.on("install-update", () => {
-        autoUpdater.quitAndInstall();
+        // quitAndInstall(isSilent, isForceRunAfter)
+        autoUpdater.quitAndInstall(false, true);
+    });
+
+    ipcMain.handle("get-version", () => {
+        return app.getVersion();
     });
 }
 
