@@ -1,0 +1,74 @@
+{
+  "name": "newsave",
+  "version": "1.0.0",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NEWTONASOP/newsave.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "pack": "electron-builder --dir",
+    "publish": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "com.newsave.downloader",
+    "productName": "NewSave",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "icon.png",
+      "publisherName": "NewSave"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "NewSave"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "NEWTONASOP",
+      "repo": "newsave",
+      "releaseType": "release"
+    },
+    "files": [
+      "**/*",
+      "!dist/*"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "NewSave",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "electron-updater": "^6.3.9",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.0",
+    "path": "^0.12.7",
+    "yt-dlp-exec": "^1.0.2"
+  },
+  "devDependencies": {
+    "electron": "^35.0.3",
+    "electron-builder": "^26.0.12",
+    "electron-packager": "^17.1.2"
+  }
+}

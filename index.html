@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NewSave - Premium YouTube Audio & Video Downloader">
+    <title>NewSave</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Million Dollar Decorative elements -->
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+        <div class="bg-noise"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <i data-lucide="music" class="logo-icon"></i>
+                </div>
+                <span class="app-name">New<span class="gradient-text">Save</span></span>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="download" id="download-nav-btn">
+                    <i data-lucide="download"></i>
+                    <span>Convert</span>
+                </button>
+                <button class="nav-item" data-tab="queue" id="queue-nav-btn">
+                    <i data-lucide="list-video"></i>
+                    <span>Downloads</span>
+                    <span class="count-badge" id="queue-badge" style="display: none;">0</span>
+                </button>
+                <button class="nav-item" data-tab="history" id="history-nav-btn">
+                    <i data-lucide="clock"></i>
+                    <span>History</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="nav-item" id="settings-btn">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="search-bar-container" id="input-section">
+                    <div class="url-input-wrapper" id="url-input-wrapper">
+                        <i data-lucide="search" class="input-icon" id="search-icon"></i>
+                        <div class="input-loader" id="input-loader" style="display: none;">
+                            <div class="mini-spinner"></div>
+                        </div>
+                        <input type="text" id="url" placeholder="Search YouTube or paste a video link..."
+                            autocomplete="off" spellcheck="false">
+                        <i data-lucide="check-circle" class="input-validation-icon" id="valid-icon"></i>
+                        <button class="icon-btn" id="paste-btn" title="Paste from clipboard">
+                            <i data-lucide="clipboard-paste"></i>
+                        </button>
+                    </div>
+                    <div id="search-results" class="search-results-floating" style="display: none;"></div>
+                </div>
+
+                <div class="window-actions">
+                    <button class="win-btn minimize" onclick="window.electron.minimizeApp()" title="Minimize">
+                        <i data-lucide="minus"></i>
+                    </button>
+                    <button class="win-btn close" onclick="window.electron.closeApp()" title="Close">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Drop Zone Overlay -->
+            <div class="drop-zone" id="drop-zone">
+                <i data-lucide="upload-cloud"></i>
+                <span>Drop YouTube link here</span>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-viewport">
+                <!-- Convert/Download Tab -->
+                <section class="tab-content active" id="download-tab">
+                    <div class="hero-section">
+                        <h1>Transform your <span class="gradient-text">Media</span></h1>
+                        <p>Fast, high-quality YouTube downloads at your fingertips</p>
+                    </div>
+
+                    <!-- Video Preview -->
+                    <div class="preview-card" id="video-preview" style="display: none;">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumbnail" alt="Video thumbnail">
+                            <span class="duration-tag" id="video-duration">0:00</span>
+                        </div>
+                        <div class="video-details">
+                            <h2 id="video-title">Video Title</h2>
+                            <div class="meta-row">
+                                <span class="badge secondary" id="playlist-badge" style="display: none;">
+                                    <i data-lucide="list-video"></i> Playlist
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration -->
+                    <div class="config-grid">
+                        <div class="config-card">
+                            <label>Media Type</label>
+                            <div class="segment-control">
+                                <label class="segment-item">
+                                    <input type="radio" name="download-type" value="audio" checked>
+                                    <div class="segment-content">
+                                        <i data-lucide="music"></i>
+                                        <span>Audio</span>
+                                    </div>
+                                </label>
+                                <label class="segment-item">
+                                    <input type="radio" name="download-type" value="video">
+                                    <div class="segment-content">
+                                        <i data-lucide="video"></i>
+                                        <span>Video</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Audio Options -->
+                        <div class="config-card options-panel" id="audio-options">
+                            <div class="option-row">
+                                <div class="field">
+                                    <label>Format</label>
+                                    <select id="format">
+                                        <option value="mp3">MP3</option>
+                                        <option value="m4a">M4A</option>
+                                        <option value="wav">WAV</option>
+                                        <option value="flac">FLAC</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Quality</label>
+                                    <select id="quality">
+                                        <option value="best">Best Quality</option>
+                                        <option value="320">320 kbps</option>
+                                        <option value="192">192 kbps</option>
+                                        <option value="128">128 kbps</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Options -->
+                        <div class="config-card options-panel" id="video-options" style="display: none;">
+                            <div class="option-row">
+                                <div class="field">
+                                    <label>Format</label>
+                                    <select id="video-format">
+                                        <option value="mp4">MP4</option>
+                                        <option value="webm">WebM</option>
+                                        <option value="mkv">MKV</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Quality</label>
+                                    <select id="video-quality">
+                                        <option value="best">Best Quality</option>
+                                        <option value="2160">4K (2160p)</option>
+                                        <option value="1080">Full HD (1080p)</option>
+                                        <option value="720">HD (720p)</option>
+                                        <option value="480">SD (480p)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Footer -->
+                    <div class="action-footer">
+                        <div class="path-selector" id="select-folder-btn">
+                            <i data-lucide="folder-open"></i>
+                            <div class="path-info">
+                                <span>Save Location</span>
+                                <p id="selected-path">Default Downloads Folder</p>
+                            </div>
+                        </div>
+                        <button class="primary-btn" id="download">
+                            <div class="btn-content" id="download-text">
+                                <i data-lucide="zap"></i>
+                                <span>Start Download</span>
+                            </div>
+                            <div class="spinner-wrapper" id="loading-spinner" style="display: none;">
+                                <div class="loading-ring"></div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div id="status"></div>
+                </section>
+
+                <!-- Queue Tab -->
+                <section class="tab-content" id="queue-tab">
+                    <div class="section-header">
+                        <h2>Active Downloads</h2>
+                        <button class="ghost-btn" id="clear-completed">
+                            <i data-lucide="trash-2"></i>
+                            <span>Clear Completed</span>
+                        </button>
+                    </div>
+                    <div class="scroll-area">
+                        <div class="item-list" id="queue-list">
+                            <div class="empty-state">
+                                <i data-lucide="inbox"></i>
+                                <p>Your download queue is empty</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- History Tab -->
+                <section class="tab-content" id="history-tab">
+                    <div class="section-header">
+                        <h2>Download History</h2>
+                        <button class="ghost-btn" id="clear-history">
+                            <i data-lucide="x-circle"></i>
+                            <span>Clear All</span>
+                        </button>
+                    </div>
+                    <div class="scroll-area">
+                        <div class="item-list" id="download-history">
+                            <div class="empty-state">
+                                <i data-lucide="archive"></i>
+                                <p>No download history yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settings-modal" style="display: none;">
+            <div class="modal-window">
+                <div class="modal-header">
+                    <h3><i data-lucide="settings-2"></i> Settings</h3>
+                    <button class="close-modal" id="close-settings">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <p>Appearance</p>
+                            <span>Choose your preferred theme</span>
+                        </div>
+                        <div class="theme-toggle">
+                            <button class="theme-opt active" data-theme="dark" title="Dark">
+                                <i data-lucide="moon"></i>
+                            </button>
+                            <button class="theme-opt" data-theme="light" title="Light">
+                                <i data-lucide="sun"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <p>Notifications</p>
+                            <span>Get notified when downloads complete</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="notifications" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <p>Save History</p>
+                            <span>Remember your download history</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="keep-history" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <p>Auto-Paste</p>
+                            <span>Auto-detect YouTube links from clipboard</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="auto-paste" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <p>Concurrent Downloads</p>
+                            <span>Maximum simultaneous downloads</span>
+                        </div>
+                        <select id="max-concurrent" class="mini-select">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i data-lucide="sparkles"></i>
+                        </div>
+                        <div class="about-details">
+                            <p class="app-version-text">NewSave v1.0.0</p>
+                            <span>Premium YouTube Downloader</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="toast-stack" id="toast-container"></div>
+    </div>
+
+    <script src="renderer.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
