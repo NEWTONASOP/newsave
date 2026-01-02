@@ -1,6 +1,6 @@
 {
   "name": "newsave",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "main.js",
   "repository": {
     "type": "git",
@@ -49,6 +49,10 @@
       "repo": "newsave",
       "releaseType": "release"
     },
+    "asar": true,
+    "asarUnpack": [
+      "yt-dlp.exe"
+    ],
     "files": [
       "**/*",
       "!dist/*"
