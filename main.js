@@ -68,7 +68,7 @@ function setupIPCHandlers() {
         }
     });
 
-    // Get video info
+    // Gett video info
     ipcMain.handle("get-video-info", async (event, url) => {
         try {
             return await getVideoInfo(url);
